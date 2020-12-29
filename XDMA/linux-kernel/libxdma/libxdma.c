@@ -3227,7 +3227,7 @@ static int transfer_init(struct xdma_engine *engine, struct xdma_request_cb *req
 
 	transfer_desc_init(xfer, desc_max);
 
-	dbg_sg("xfer= %p transfer->desc_bus = 0x%llx.\n",xfer, (u64)xfer->desc_bus);
+	dbg_sg("xfer= %p engine-desc_idx: %d transfer->desc_bus = 0x%llx.\n",xfer, engine->desc_idx, (u64)xfer->desc_bus);
 	transfer_build(engine, req, xfer , desc_max);
 
 	/* Contiguous descriptors cannot cross PAGE boundry. Adjust max accordingly */
@@ -3605,11 +3605,13 @@ ssize_t xdma_xfer_submit(void *dev_hndl, int channel, bool write, u64 ep_addr,
 			if (engine->streaming && engine->dir == DMA_FROM_DEVICE) {
 				for (i=0; i < xfer->desc_num; i++) {
 					done += result[i].length;
+					dbg_tfr("status: %x, length: %u, done: %lu.\n", result[i].status, result[i].length, done);
 				}
 			}
-			else
+			else {
 				done += xfer->len;
-
+				dbg_tfr("done: %lu.\n", done);
+			}
 			rv = 0;
 			break;
 		case TRANSFER_STATE_FAILED:
