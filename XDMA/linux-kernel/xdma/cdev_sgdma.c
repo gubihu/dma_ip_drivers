@@ -391,10 +391,13 @@ static ssize_t char_sgdma_read_write(struct file *file, const char __user *buf,
 	if (rv < 0)
 		return rv;
 
+	pr_info("xdam_xfer_submit start\n");
 	res = xdma_xfer_submit(xdev, engine->channel, write, *pos, &cb.sgt,
 				0, write ? h2c_timeout * 1000 :
 					   c2h_timeout * 1000);
 
+	pr_info("xdma_xfer_submit res: %ld\n", res);
+	
 	char_sgdma_unmap_user_buf(&cb, write);
 
 	return res;

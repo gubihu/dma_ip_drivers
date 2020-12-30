@@ -256,6 +256,7 @@ static const struct file_operations ctrl_fops = {
 	.read = char_ctrl_read,
 	.write = char_ctrl_write,
 	.mmap = bridge_mmap,
+	.llseek = char_llseek,
 	.unlocked_ioctl = char_ctrl_ioctl,
 };
 

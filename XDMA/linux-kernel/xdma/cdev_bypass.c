@@ -178,6 +178,34 @@ static ssize_t char_bypass_write(struct file *file, const char __user *buf,
 	return rc;
 }
 
+loff_t char_llseek(struct file *filp, loff_t off, int whence)
+{
+  loff_t retval = 0; /* value used in "goto out" statements */
+  long old_pos = (long int)filp->f_pos;
+
+  switch(whence)
+  {
+    case 0: /* SEEK_SET */
+    	retval = off;
+      break;
+
+    case 1: /* SEEK_CUR */
+    	retval = old_pos + off;
+      break;
+
+    case 2: /* SEEK_END */
+    	retval = 1024 + off;
+      break;
+
+    default: /* can't happen */
+      return -EINVAL;
+  }
+  if(retval < 0) return -EINVAL;
+  filp->f_pos = retval;
+
+  return retval;
+}
+
 
 /*
  * character device file operations for bypass operation
@@ -190,6 +218,7 @@ static const struct file_operations bypass_fops = {
 	.read = char_bypass_read,
 	.write = char_bypass_write,
 	.mmap = bridge_mmap,
+	.llseek = char_llseek,
 };
 
 void cdev_bypass_init(struct xdma_cdev *xcdev)
